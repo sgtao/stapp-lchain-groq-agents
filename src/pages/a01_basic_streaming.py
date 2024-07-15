@@ -1,11 +1,11 @@
-import os
-
 from langchain.callbacks.base import BaseCallbackHandler
 from langchain.schema import ChatMessage
 
 # from langchain_core.prompts import ChatPromptTemplate
 from langchain_groq import ChatGroq
 import streamlit as st
+
+from components.sidebar_key_and_model import sidebar_key_and_model
 
 
 class StreamHandler(BaseCallbackHandler):
@@ -22,27 +22,10 @@ class StreamHandler(BaseCallbackHandler):
 st.set_page_config(page_title="basic streaming", page_icon="🌊")
 st.subheader("🌊: basic streaming using ChatGroq")
 
-if "groq_api_key" in st.session_state:
-    groq_api_key = st.session_state.groq_api_key
-elif os.getenv("GROQ_API_KEY"):
-    st.session_state.groq_api_key = os.getenv("GROQ_API_KEY")
-    groq_api_key = st.session_state.groq_api_key
-else:
-    groq_api_key = ""
+# set API-KEY and Model at SideBar
+sidebar_key_and_model()
 
-with st.sidebar:
-    # API-KEYの設定
-    st.session_state.groq_api_key = st.text_input(
-        "Groq API Key",
-        key="api_key",
-        type="password",
-        placeholder="gsk_...",
-        value=groq_api_key,
-    )
-    groq_api_key = st.session_state.groq_api_key
-    "[Get an Groq API key](https://console.groq.com/keys)"
-
-
+# 会話履歴表示。（ない場合は、初期メッセージ表示）
 if "messages" not in st.session_state:
     st.session_state["messages"] = [
         ChatMessage(role="assistant", content="How can I help you?")
@@ -51,6 +34,7 @@ if "messages" not in st.session_state:
 for msg in st.session_state.messages:
     st.chat_message(msg.role).write(msg.content)
 
+# ユーザー入力から回答出力：
 if prompt := st.chat_input():
     st.session_state.messages.append(ChatMessage(role="user", content=prompt))
     st.chat_message("user").write(prompt)
@@ -69,16 +53,16 @@ if prompt := st.chat_input():
         try:
             llm = ChatGroq(
                 temperature=0,
-                model="llama3-70b-8192",
+                model=st.session_state.selected_model,
                 api_key=st.session_state.groq_api_key,
                 callbacks=[stream_handler],  # StreamHandlerをcallbacksに追加
             )
             response = llm.invoke(st.session_state.messages)
             # print(response)
             completion_content = response.content
+            st.write(completion_content)
             st.session_state.messages.append(
                 ChatMessage(role="assistant", content=completion_content)
             )
-            st.write(completion_content)
         except Exception as e:
-            st.error(f"エラーが発生しました: {str(e)}")
+            st.error(f"An error occurred: {e}")
