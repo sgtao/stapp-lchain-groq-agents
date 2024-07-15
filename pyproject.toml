@@ -1,9 +1,9 @@
 [tool.poetry]
-name = "stpyapp-template"
+name = "stapp-lchain-groq-agents"
 version = "0.1.0"
-description = "streamlit project template for quick start"
+description = "streamlit app of ai-agents using Groq with langchain"
 authors = ["Shogo Ogami <sg.tao.so@gmail.com>"]
-license = "MIT License"
+license = "Apache 2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
