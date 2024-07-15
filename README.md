@@ -98,6 +98,7 @@ task test-repo
 このプロジェクトは以下のサンプルコードを参考にしています
 
 - [langchain-ai/streamlit-agent](https://github.com/langchain-ai/streamlit-agent)
+- LangChain：[ChatModel > Groq](https://python.langchain.com/v0.2/docs/integrations/chat/groq/)
 
 ## ライセンス
 Apache 2.0
